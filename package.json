@@ -26,14 +26,15 @@
     "styled-components": "^6.1.16"
   },
   "engines": {
-    "node": "22.14.0",
-    "yarn": "1.22.22"
+    "node": ">=18.0.0 <=18.17.x",
+    "npm": ">=6.0.0",
+    "yarn": "1.22.x"
   },
   "strapi": {
     "uuid": "ae97edc3-b9a5-4000-bd34-43b102ca9a04"
   },
   "volta": {
-    "node": "22.14.0",
-    "yarn": "4.7.0"
+    "node": "18.17.0",
+    "yarn": "1.22.19"
   }
 }
