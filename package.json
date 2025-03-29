@@ -15,21 +15,25 @@
     "upgrade:dry": "npx @strapi/upgrade latest --dry"
   },
   "dependencies": {
-    "@strapi/provider-upload-local": "5.11.0",
-    "@strapi/plugin-users-permissions": "5.11.0",
-    "@strapi/strapi": "5.11.0",
-    "pg": "8.8.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "react-router-dom": "^6.0.0",
-    "styled-components": "^6.0.0"
+    "@strapi/plugin-users-permissions": "5.12.0",
+    "@strapi/provider-upload-cloudinary": "^5.12.1",
+    "@strapi/provider-upload-local": "5.12.0",
+    "@strapi/strapi": "5.12.0",
+    "pg": "8.14.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.0",
+    "styled-components": "^6.1.16"
   },
-  "devDependencies": {},
   "engines": {
     "node": ">=18.0.0 <=22.x.x",
     "npm": ">=6.0.0"
   },
   "strapi": {
     "uuid": "ae97edc3-b9a5-4000-bd34-43b102ca9a04"
+  },
+  "volta": {
+    "node": "22.14.0",
+    "yarn": "4.7.0"
   }
 }
