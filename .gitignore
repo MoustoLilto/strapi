@@ -113,3 +113,5 @@ exports
 build
 .strapi-updater.json
 .strapi
+# Ignorer le dossier de documentation générée dans les extensions
+src/extensions/documentation
