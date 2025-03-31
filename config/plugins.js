@@ -77,4 +77,17 @@ module.exports = ({ env }) => ({
       sendMetadata: true,
     },
   },
+
+  graphql: {
+    config: {
+      endpoint: '/graphql',
+      shadowCRUD: true,
+      landingPage: env('NODE_ENV') !== 'production',
+      depthLimit: 10,
+      amountLimit: 100,
+      apolloServer: {
+        tracing: false,
+      },
+    },
+  },
 });

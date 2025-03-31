@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@strapi/plugin-documentation": "^5.12.1",
+    "@strapi/plugin-graphql": "^5.12.1",
     "@strapi/plugin-sentry": "^5.12.1",
     "@strapi/plugin-seo": "^2.0.8",
     "@strapi/plugin-users-permissions": "5.12.1",
