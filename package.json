@@ -17,6 +17,7 @@
   "dependencies": {
     "@strapi/plugin-seo": "^2.0.8",
     "@strapi/plugin-users-permissions": "5.12.1",
+    "@strapi/provider-email-mailgun": "^5.12.1",
     "@strapi/provider-email-nodemailer": "^5.12.1",
     "@strapi/provider-upload-cloudinary": "^5.12.1",
     "@strapi/provider-upload-local": "5.12.1",

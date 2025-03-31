@@ -14,12 +14,19 @@ module.exports = ({ env }) => ({
         cloud_name: env('CLOUDINARY_NAME'),
         api_key: env('CLOUDINARY_KEY'),
         api_secret: env('CLOUDINARY_SECRET'),
-        folder: env('CLOUDINARY_FOLDER'),
       },
 
       actionOptions: {
-        upload: {},
-        uploadStream: {},
+        upload: {
+          folder: env('CLOUDINARY_FOLDER'),
+          use_filename: true,
+          unique_filename: true
+        },
+        uploadStream: {
+          folder: env('CLOUDINARY_FOLDER'),
+          use_filename: true,
+          unique_filename: true
+        },
         delete: {},
       },
     },
@@ -44,4 +51,22 @@ module.exports = ({ env }) => ({
       },
     },
   },
+
+  // Mailgun
+  // email: {
+  //   email: {
+  //     config: {
+  //       provider: 'mailgun',
+  //       providerOptions: {
+  //         key: env('MAILGUN_API_KEY'), // Required
+  //         domain: env('MAILGUN_DOMAIN'), // Required
+  //         url: env('MAILGUN_URL', 'https://api.mailgun.net'), //Optional. If domain region is Europe use 'https://api.eu.mailgun.net'
+  //       },
+  //       settings: {
+  //         defaultFrom: 'myemail@protonmail.com',
+  //         defaultReplyTo: 'myemail@protonmail.com',
+  //       },
+  //     },
+  //   },
+  // },
 });
