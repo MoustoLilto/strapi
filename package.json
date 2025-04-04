@@ -30,7 +30,7 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.30.0",
     "strapi-plugin-comments": "^3.0.9",
-    "styled-components": "^6.1.16"
+    "styled-components": "^6.1.17"
   },
   "engines": {
     "node": ">=18.0.0 <=18.17.x",
