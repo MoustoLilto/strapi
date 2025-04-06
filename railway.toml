@@ -1,0 +1,5 @@
+[deploy]
+healthcheckPath = "/api/healthcheck"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+startCommand = "yarn start"

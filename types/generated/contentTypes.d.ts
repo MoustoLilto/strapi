@@ -422,7 +422,6 @@ export interface ApiCartItemCartItem extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
-    added_at: Schema.Attribute.DateTime & Schema.Attribute.Required;
     cart: Schema.Attribute.Relation<'manyToOne', 'api::cart.cart'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -443,7 +442,6 @@ export interface ApiCartItemCartItem extends Struct.CollectionTypeSchema {
         },
         number
       >;
-    updated_at: Schema.Attribute.DateTime & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

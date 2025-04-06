@@ -11,30 +11,21 @@
     "draftAndPublish": false
   },
   "attributes": {
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product"
+    },
     "quantity": {
       "type": "integer",
       "required": true,
       "min": 1
     },
-    "added_at": {
-      "type": "datetime",
-      "required": true
-    },
-    "updated_at": {
-      "type": "datetime",
-      "required": true
-    },
-
     "cart": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::cart.cart",
       "inversedBy": "cart_items"
-    },
-    "product": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::product.product"
     }
   }
 }

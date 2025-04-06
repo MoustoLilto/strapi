@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "content": "# Workflow E-commerce - The Wellness Seeker\n\nCe workflow automatise le processus de traitement des produits pour votre boutique en ligne \"The Wellness Seeker\", spécialisée dans les produits capillaires et les soins du corps.\n\nLe workflow suit les étapes suivantes :\n1. Collecte d'informations sur le produit\n2. Téléchargement des images\n3. Traitement et optimisation des images\n4. Création des descriptions du produit\n5. Compilation de la documentation complète"
+        "content": "# Workflow E-commerce - The Wellness Seeker\n\nCe workflow automatise le processus de traitement des produits pour votre boutique \"The Wellness Seeker\", spécialisée dans les produits capillaires et les soins du corps.\n\nLe workflow suit les étapes suivantes :\n1. Collecte d'informations sur le produit\n2. Téléchargement des images\n3. Traitement et optimisation des images\n4. Création des descriptions du produit\n5. Compilation de la documentation complète"
       },
       "name": "Markdown",
       "type": "n8n-nodes-base.markdown",
