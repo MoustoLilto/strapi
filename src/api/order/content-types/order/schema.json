@@ -1,0 +1,98 @@
+{
+  "kind": "collectionType",
+  "collectionName": "orders",
+  "info": {
+    "singularName": "order",
+    "pluralName": "orders",
+    "displayName": "Order",
+    "description": "Commandes des clients"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "reference": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "description": "Numéro de commande unique"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "paid",
+        "processing",
+        "shipped",
+        "delivered",
+        "cancelled",
+        "refunded"
+      ],
+      "required": true,
+      "default": "pending"
+    },
+    "total_amount": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "shipping_cost": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "tax_amount": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "shipping_address": {
+      "type": "component",
+      "repeatable": false,
+      "component": "order.address",
+      "required": true
+    },
+    "billing_address": {
+      "type": "component",
+      "repeatable": false,
+      "component": "order.address",
+      "required": true
+    },
+    "payment_date": {
+      "type": "datetime"
+    },
+    "shipping_date": {
+      "type": "datetime"
+    },
+    "delivery_date": {
+      "type": "datetime"
+    },
+    "payment_method": {
+      "type": "string"
+    },
+    "payment_id": {
+      "type": "string",
+      "description": "Identifiant de transaction du système de paiement"
+    },
+    "customer_notes": {
+      "type": "text",
+      "description": "Notes laissées par le client"
+    },
+    "admin_notes": {
+      "type": "text",
+      "description": "Notes internes pour l'administration"
+    },
+    "order_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::order-item.order-item",
+      "mappedBy": "order"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "orders"
+    }
+  }
+}

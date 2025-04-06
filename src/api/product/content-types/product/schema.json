@@ -140,6 +140,21 @@
       },
       "default": "all"
     },
+    "product_type": {
+      "type": "enumeration",
+      "enum": [
+        "shampoo",
+        "conditioner",
+        "mask",
+        "oil",
+        "serum",
+        "styling",
+        "accessory",
+        "face_care",
+        "other"
+      ],
+      "required": true
+    },
     "benefits": {
       "type": "component",
       "repeatable": true,
@@ -155,7 +170,35 @@
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::category.category",
-      "mappedBy": "products"
+      "inversedBy": "products"
+    },
+    "volume": {
+      "type": "string",
+      "required": true
+    },
+    "brand": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::brand.brand",
+      "inversedBy": "products"
+    },
+    "reviews": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::review.review",
+      "mappedBy": "product"
+    },
+    "average_rating": {
+      "type": "decimal",
+      "min": 0,
+      "max": 5,
+      "description": "Note moyenne calculée"
+    },
+    "review_count": {
+      "type": "integer",
+      "default": 0,
+      "min": 0,
+      "description": "Nombre total d'avis"
     }
   }
 }

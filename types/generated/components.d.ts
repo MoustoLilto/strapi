@@ -1,5 +1,23 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface OrderAddress extends Struct.ComponentSchema {
+  collectionName: 'components_order_addresses';
+  info: {
+    description: 'Adresse de livraison ou facturation';
+    displayName: 'Address';
+  };
+  attributes: {
+    address_line1: Schema.Attribute.String & Schema.Attribute.Required;
+    address_line2: Schema.Attribute.String;
+    city: Schema.Attribute.String & Schema.Attribute.Required;
+    country: Schema.Attribute.String & Schema.Attribute.Required;
+    email: Schema.Attribute.Email & Schema.Attribute.Required;
+    full_name: Schema.Attribute.String & Schema.Attribute.Required;
+    phone: Schema.Attribute.String & Schema.Attribute.Required;
+    postal_code: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface ProductBenefit extends Struct.ComponentSchema {
   collectionName: 'components_product_benefits';
   info: {
@@ -66,6 +84,7 @@ export interface SharedSeo extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'order.address': OrderAddress;
       'product.benefit': ProductBenefit;
       'shared.open-graph': SharedOpenGraph;
       'shared.seo': SharedSeo;

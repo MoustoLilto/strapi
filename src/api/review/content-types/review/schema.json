@@ -1,0 +1,101 @@
+{
+  "kind": "collectionType",
+  "collectionName": "reviews",
+  "info": {
+    "singularName": "review",
+    "pluralName": "reviews",
+    "displayName": "Review",
+    "description": "Avis clients sur les produits"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "rating": {
+      "type": "integer",
+      "required": true,
+      "min": 1,
+      "max": 5,
+      "description": "Note sur 5 étoiles"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 100
+    },
+    "comment": {
+      "type": "text",
+      "required": true
+    },
+    "is_verified_purchase": {
+      "type": "boolean",
+      "default": false,
+      "description": "L'utilisateur a acheté le produit"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "required": true
+    },
+    "hair_type": {
+      "type": "enumeration",
+      "enum": [
+        "straight",
+        "wavy",
+        "curly",
+        "coily",
+        "thin",
+        "thick",
+        "damaged",
+        "colored"
+      ]
+    },
+    "usage_duration": {
+      "type": "enumeration",
+      "enum": [
+        "one_time",
+        "few_days",
+        "few_weeks",
+        "few_months",
+        "long_term"
+      ],
+      "description": "Durée d'utilisation du produit"
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"],
+      "description": "Photos du client"
+    },
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product",
+      "inversedBy": "reviews"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "reviews"
+    },
+    "helpful_count": {
+      "type": "integer",
+      "default": 0,
+      "min": 0,
+      "description": "Nombre d'utilisateurs trouvant cet avis utile"
+    },
+    "reported_count": {
+      "type": "integer",
+      "default": 0,
+      "min": 0,
+      "description": "Nombre de signalements de cet avis"
+    }
+  }
+}

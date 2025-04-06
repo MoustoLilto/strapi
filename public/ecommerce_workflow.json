@@ -1,0 +1,484 @@
+{
+  "name": "Workflow E-commerce - The Wellness Seeker",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Workflow E-commerce - The Wellness Seeker\n\nCe workflow automatise le processus de traitement des produits pour votre boutique en ligne \"The Wellness Seeker\", spécialisée dans les produits capillaires et les soins du corps.\n\nLe workflow suit les étapes suivantes :\n1. Collecte d'informations sur le produit\n2. Téléchargement des images\n3. Traitement et optimisation des images\n4. Création des descriptions du produit\n5. Compilation de la documentation complète"
+      },
+      "name": "Markdown",
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [
+        240,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 1,
+              "unit": "days"
+            }
+          ]
+        }
+      },
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        540
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "nouveau-produit",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        660
+      ],
+      "webhookId": "nouveau-produit"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Ce code traite les données du produit reçues via le webhook\nconst data = $input.item.json;\n\n// Validation des données requises\nif (!data.nom || !data.marque || !data.liens || !data.liens.length) {\n  throw new Error('Données produit incomplètes. Veuillez fournir au minimum: nom, marque et liens');\n}\n\n// Ajout à la queue de traitement\nconst queueItem = {\n  id: Date.now(),\n  status: 'pending',\n  priority: data.priority || 'normal',\n  data: {\n    nom: data.nom,\n    marque: data.marque,\n    liens: data.liens,\n    type_cheveux: data.type_cheveux || 'Tous types',\n    benefices: data.benefices || [],\n    caracteristiques: data.caracteristiques || [],\n    timestamp: new Date().toISOString(),\n    dossier_produit: `/produits/${data.nom.toLowerCase().replace(/\\s+/g, '_')}`\n  }\n};\n\n// Ajout à la queue\nawait $node.queue.add(queueItem);\n\nreturn {\n  json: queueItem.data\n};"
+      },
+      "name": "Traitement Données Produit",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        460,
+        660
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.liens.length }}",
+              "operation": "notEqual",
+              "value2": "0"
+            }
+          ]
+        }
+      },
+      "name": "IF (Liens Valides)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        680,
+        660
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Ce code extrait les informations du produit à partir des liens fournis\nconst { liens } = $input.item.json;\n\n// Simulation de l'extraction d'informations\nreturn {\n  json: {\n    ...$input.item.json,\n    informations_extraites: true,\n    description_extraite: `Description extraite automatiquement pour ${$input.item.json.nom} de la marque ${$input.item.json.marque}`,\n    images_urls: [\n      `https://exemple.com/images/${$input.item.json.nom.toLowerCase().replace(/\\s+/g, '_')}_1.jpg`,\n      `https://exemple.com/images/${$input.item.json.nom.toLowerCase().replace(/\\s+/g, '_')}_2.jpg`\n    ]\n  }\n};"
+      },
+      "name": "Extraction Informations",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        900,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Ce code télécharge les images du produit\nconst { images_urls, dossier_produit, nom } = $input.item.json;\n\n// Simulation du téléchargement d'images\nreturn {\n  json: {\n    ...$input.item.json,\n    images_telechargees: true,\n    images_locales: images_urls.map((url, index) => {\n      const fileName = `${nom.toLowerCase().replace(/\\s+/g, '_')}_${index + 1}.jpg`;\n      return `${dossier_produit}/images/original/${fileName}`;\n    })\n  }\n};"
+      },
+      "name": "Téléchargement Images",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Ce code traite et optimise les images téléchargées\nconst { images_locales, dossier_produit, nom } = $input.item.json;\n\n// Formats e-commerce standards\nconst formats = [\n  { nom: 'main', largeur: 1200, hauteur: 1200 },\n  { nom: 'thumbnail', largeur: 300, hauteur: 300 },\n  { nom: 'banner', largeur: 1200, hauteur: 300 },\n  { nom: 'mobile', largeur: 600, hauteur: 600 },\n  { nom: 'zoom', largeur: 2000, hauteur: 2000 }\n];\n\n// Simulation du traitement d'images\nconst images_traitees = [];\nconst images_formats = {};\n\nimages_locales.forEach((imagePath, index) => {\n  // Image traitée\n  const imageTraitee = `${dossier_produit}/images/processed/${nom.toLowerCase().replace(/\\s+/g, '_')}_${index + 1}.jpg`;\n  images_traitees.push(imageTraitee);\n  \n  // Images aux différents formats\n  formats.forEach(format => {\n    if (!images_formats[format.nom]) images_formats[format.nom] = [];\n    images_formats[format.nom].push(`${dossier_produit}/images/formats/${nom.toLowerCase().replace(/\\s+/g, '_')}_${index + 1}_${format.nom}.jpg`);\n  });\n});\n\nreturn {\n  json: {\n    ...$input.item.json,\n    images_traitees,\n    images_formats\n  }\n};"
+      },
+      "name": "Traitement Images",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Ce code génère les descriptions du produit\nconst { nom, marque, type_cheveux, benefices, caracteristiques, description_extraite } = $input.item.json;\n\n// Génération des descriptions\nconst description_courte = `${nom} de ${marque} : après-shampooing démêlant certifié, enrichi en ingrédients naturels pour des cheveux ${type_cheveux.toLowerCase()} souples, hydratés et pleins de vie.`;\n\nconst description_detaillee = `Le ${nom} de ${marque} est bien plus qu'un simple après-shampooing. Cette formule précieuse, certifiée, représente l'alliance parfaite entre science capillaire et ingrédients naturels pour sublimer vos cheveux.\\n\\n${description_extraite}\\n\\nCe soin léger ne laisse aucun résidu et n'alourdit pas vos cheveux. Il respecte l'équilibre naturel du cuir chevelu tout en apportant tous les nutriments nécessaires à la santé de vos cheveux.`;\n\nconst caracteristiques_techniques = [\n  `Nom du produit : ${nom}`,\n  `Marque : ${marque}`,\n  `Type de cheveux : ${type_cheveux}`,\n  ...caracteristiques\n];\n\nconst mode_emploi = [\n  \"1. Après le shampooing, essorez délicatement vos cheveux\",\n  \"2. Appliquez section par section sur longueurs et pointes\",\n  \"3. Laissez agir 2 à 3 minutes\",\n  \"4. Démêlez délicatement\",\n  \"5. Rincez abondamment à l'eau tiède\"\n];\n\nconst benefices_produit = benefices.length > 0 ? benefices : [\n  \"Démêle facilement sans alourdir\",\n  \"Hydrate en profondeur\",\n  \"Renforce la fibre capillaire\",\n  \"Apporte brillance et souplesse\"\n];\n\nreturn {\n  json: {\n    ...$input.item.json,\n    description_courte,\n    description_detaillee,\n    caracteristiques_techniques,\n    mode_emploi,\n    benefices_produit\n  }\n};"
+      },
+      "name": "Création Descriptions",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Ce code compile la documentation complète du produit\nconst { \n  nom, \n  marque, \n  description_courte, \n  description_detaillee, \n  caracteristiques_techniques, \n  mode_emploi, \n  benefices_produit,\n  dossier_produit,\n  images_formats\n} = $input.item.json;\n\n// Création du fichier de documentation complet\nconst documentation_complete = `# ${nom} - ${marque}\\n## Fiche Produit Complète pour E-commerce\\n\\n## Description Courte\\n\\n${description_courte}\\n\\n## Description Détaillée\\n\\n${description_detaillee}\\n\\n## Caractéristiques Techniques\\n\\n${caracteristiques_techniques.join('\\n')}\\n\\n## Mode d'Emploi\\n\\n${mode_emploi.join('\\n')}\\n\\n## Bénéfices du Produit\\n\\n${benefices_produit.join('\\n')}\\n\\n## Pour Qui ?\\nTous types de cheveux, particulièrement adapté pour ${type_cheveux}.\\n\\n---\\n\\n*Ce produit s'inscrit parfaitement dans la philosophie \"The Wellness Seeker\" de notre boutique, qui met l'accent sur la santé des cheveux et l'éducation des clients pour les aider à faire les meilleurs choix adaptés à leur type de cheveux.*`;\n\n// Chemins des fichiers de documentation\nconst fichiers_documentation = {\n  documentation_complete: `${dossier_produit}/documentation/${nom.toLowerCase().replace(/\\s+/g, '_')}_complete.md`,\n  description_courte: `${dossier_produit}/documentation/${nom.toLowerCase().replace(/\\s+/g, '_')}_short_description.md`,\n  description_detaillee: `${dossier_produit}/documentation/${nom.toLowerCase().replace(/\\s+/g, '_')}_detailed_description.md`,\n  caracteristiques: `${dossier_produit}/documentation/${nom.toLowerCase().replace(/\\s+/g, '_')}_specifications.md`,\n  mode_emploi: `${dossier_produit}/documentation/${nom.toLowerCase().replace(/\\s+/g, '_')}_instructions.md`,\n  benefices: `${dossier_produit}/documentation/${nom.toLowerCase().replace(/\\s+/g, '_')}_benefits.md`\n};\n\nreturn {\n  json: {\n    ...$input.item.json,\n    documentation_complete,\n    fichiers_documentation,\n    package_final: `${dossier_produit}/${nom.toLowerCase().replace(/\\s+/g, '_')}_package.zip`\n  }\n};"
+      },
+      "name": "Compilation Documentation",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Ce code prépare le package final\nconst { \n  nom, \n  marque, \n  dossier_produit,\n  images_formats,\n  fichiers_documentation,\n  package_final\n} = $input.item.json;\n\n// Simulation de la création du package final\nreturn {\n  json: {\n    ...$input.item.json,\n    package_cree: true,\n    message: `Le package pour ${nom} de ${marque} a été créé avec succès !`,\n    contenu_package: {\n      images: images_formats,\n      documentation: fichiers_documentation,\n      package_zip: package_final\n    }\n  }\n};"
+      },
+      "name": "Préparation Package",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "subject": "=Nouveau produit traité : {{ $json.nom }} - {{ $json.marque }}",
+        "content": "=<h1>Traitement du produit terminé</h1>\n<p>Le workflow a terminé le traitement du produit <strong>{{ $json.nom }}</strong> de la marque <strong>{{ $json.marque }}</strong>.</p>\n\n<h2>Résumé du traitement</h2>\n<ul>\n  <li>Images traitées et optimisées dans 5 formats différents</li>\n  <li>Descriptions du produit générées</li>\n  <li>Documentation complète compilée</li>\n  <li>Package final créé</li>\n</ul>\n\n<p>Vous pouvez maintenant intégrer ces éléments dans votre boutique en ligne.</p>\n\n<p>The Wellness Seeker - Votre partenaire pour une boutique en ligne axée sur la santé des cheveux et l'éducation des clients.</p>",
+        "options": {}
+      },
+      "name": "Envoi Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        2220,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# Erreur : Liens Invalides\n\nAucun lien valide n'a été fourni pour le produit. Veuillez fournir au moins un lien vers un site où le produit est référencé ou vendu."
+      },
+      "name": "Erreur Liens",
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        900,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "subject": "=Erreur de traitement : {{ $json.nom }} - {{ $json.marque }}",
+        "content": "=<h1>Erreur lors du traitement du produit</h1>\n<p>Le workflow n'a pas pu traiter le produit <strong>{{ $json.nom }}</strong> de la marque <strong>{{ $json.marque }}</strong>.</p>\n\n<h2>Raison de l'erreur</h2>\n<p>Aucun lien valide n'a été fourni pour le produit. Veuillez fournir au moins un lien vers un site où le produit est référencé ou vendu.</p>\n\n<p>Veuillez corriger les informations et réessayer.</p>",
+        "options": {}
+      },
+      "name": "Envoi Email Erreur",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "upload",
+        "publicId": "={{ $json.dossier_produit }}/{{ $json.nom.toLowerCase().replace(/\\s+/g, '_') }}",
+        "file": "={{ $binary.data }}",
+        "options": {
+          "format": "webp",
+          "quality": "auto",
+          "fetch_format": "auto"
+        }
+      },
+      "name": "Cloudinary Upload",
+      "type": "n8n-nodes-base.cloudinary",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "prompt": "=Créez une description marketing pour le produit suivant :\nNom: {{ $json.nom }}\nMarque: {{ $json.marque }}\nType de cheveux: {{ $json.type_cheveux }}\nCaractéristiques: {{ $json.caracteristiques.join(', ') }}\n\nGénérez :\n1. Une description courte (max 150 caractères)\n2. Une description détaillée (max 500 caractères)\n3. Une liste de 5 bénéfices clés\n4. Un mode d'emploi en 5 étapes\n\nFormat de réponse souhaité : JSON",
+        "options": {
+          "temperature": 0.7,
+          "max_tokens": 1000
+        }
+      },
+      "name": "OpenAI Content Generation",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Traitement de la réponse OpenAI\nconst openAIResponse = $input.item.json;\n\n// Extraction des différentes parties du contenu\nconst content = JSON.parse(openAIResponse.choices[0].message.content);\n\nreturn {\n  json: {\n    ...$input.item.json,\n    description_courte: content.description_courte,\n    description_detaillee: content.description_detaillee,\n    benefices_produit: content.benefices,\n    mode_emploi: content.mode_emploi\n  }\n};"
+      },
+      "name": "Traitement Réponse OpenAI",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "subject": "=Validation requise : {{ $json.nom }} - {{ $json.marque }}",
+        "content": "=<h1>Validation de contenu requise</h1>\n<p>Un nouveau produit a été traité et nécessite votre validation :</p>\n\n<h2>Détails du produit</h2>\n<ul>\n  <li>Nom : {{ $json.nom }}</li>\n  <li>Marque : {{ $json.marque }}</li>\n  <li>Description courte : {{ $json.description_courte }}</li>\n</ul>\n\n<p>Veuillez valider ou modifier le contenu en cliquant sur le lien ci-dessous :</p>\n\n<a href=\"{{ $json.validation_url }}\">Valider le contenu</a>",
+        "options": {}
+      },
+      "name": "Email Validation",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Mise à jour du statut dans la queue\nconst queueItem = await $node.queue.get($input.item.json.id);\nqueueItem.status = 'completed';\nawait $node.queue.update(queueItem);\n\n// Envoi des métriques\nawait $node.metrics.increment('products_processed');\nawait $node.metrics.timing('processing_time', Date.now() - new Date(queueItem.data.timestamp).getTime());\n\nreturn {\n  json: {\n    ...$input.item.json,\n    status: 'completed',\n    processing_time: Date.now() - new Date(queueItem.data.timestamp).getTime()\n  }\n};"
+      },
+      "name": "Finalisation",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        580
+      ]
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Traitement Données Produit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Traitement Données Produit": {
+      "main": [
+        [
+          {
+            "node": "IF (Liens Valides)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF (Liens Valides)": {
+      "main": [
+        [
+          {
+            "node": "Extraction Informations",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Erreur Liens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraction Informations": {
+      "main": [
+        [
+          {
+            "node": "Téléchargement Images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Téléchargement Images": {
+      "main": [
+        [
+          {
+            "node": "Traitement Images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Traitement Images": {
+      "main": [
+        [
+          {
+            "node": "Création Descriptions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Création Descriptions": {
+      "main": [
+        [
+          {
+            "node": "Compilation Documentation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compilation Documentation": {
+      "main": [
+        [
+          {
+            "node": "Préparation Package",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Préparation Package": {
+      "main": [
+        [
+          {
+            "node": "Envoi Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Erreur Liens": {
+      "main": [
+        [
+          {
+            "node": "Envoi Email Erreur",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cloudinary Upload": {
+      "main": [
+        [
+          {
+            "node": "OpenAI Content Generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Content Generation": {
+      "main": [
+        [
+          {
+            "node": "Traitement Réponse OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Traitement Réponse OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Email Validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Validation": {
+      "main": [
+        [
+          {
+            "node": "Finalisation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 3600,
+    "timezone": "Europe/Paris"
+  },
+  "versionId": "1",
+  "id": "1",
+  "meta": {
+    "instanceId": "1"
+  },
+  "tags": []
+}
