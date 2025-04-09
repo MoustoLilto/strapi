@@ -121,39 +121,16 @@
       }
     },
     "hair_type": {
-      "type": "enumeration",
-      "enum": [
-        "all",
-        "straight",
-        "wavy",
-        "curly",
-        "coily",
-        "thin",
-        "thick",
-        "damaged",
-        "colored"
-      ],
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      },
-      "default": "all"
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::hair-type.hair-type",
+      "inversedBy": "products"
     },
     "product_type": {
-      "type": "enumeration",
-      "enum": [
-        "shampoo",
-        "conditioner",
-        "mask",
-        "oil",
-        "serum",
-        "styling",
-        "accessory",
-        "face_care",
-        "other"
-      ],
-      "required": true
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product-type.product-type",
+      "inversedBy": "products"
     },
     "benefits": {
       "type": "component",
