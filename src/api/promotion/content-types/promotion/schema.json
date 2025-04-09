@@ -1,0 +1,91 @@
+{
+  "kind": "collectionType",
+  "collectionName": "promotions",
+  "info": {
+    "singularName": "promotion",
+    "pluralName": "promotions",
+    "displayName": "Promotion",
+    "description": "Gestion des promotions et réductions"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "startDate": {
+      "type": "datetime",
+      "required": true
+    },
+    "endDate": {
+      "type": "datetime",
+      "required": true
+    },
+    "discountType": {
+      "type": "enumeration",
+      "enum": [
+        "percentage",
+        "fixed_amount"
+      ],
+      "required": true,
+      "default": "percentage"
+    },
+    "discountValue": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "max": 100
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "conditions": {
+      "type": "json",
+      "description": "Conditions spécifiques pour l'application de la promotion"
+    },
+    "minimumPurchaseAmount": {
+      "type": "decimal",
+      "min": 0,
+      "default": 0
+    },
+    "maximumDiscountAmount": {
+      "type": "decimal",
+      "min": 0
+    },
+    "priority": {
+      "type": "integer",
+      "default": 0,
+      "description": "Priorité d'application de la promotion (plus le chiffre est élevé, plus la priorité est haute)"
+    },
+    "usageLimit": {
+      "type": "integer",
+      "min": 0,
+      "description": "Nombre maximum d'utilisations de la promotion (0 = illimité)"
+    },
+    "currentUsageCount": {
+      "type": "integer",
+      "default": 0,
+      "private": true
+    },
+    "products": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product.product",
+      "inversedBy": "promotions"
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "inversedBy": "promotions"
+    }
+  }
+}

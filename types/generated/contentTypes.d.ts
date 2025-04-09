@@ -521,6 +521,10 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    discountCodes: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::discount-code.discount-code'
+    >;
     image: Schema.Attribute.Media<'images'> &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
@@ -547,6 +551,10 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     parent: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
     products: Schema.Attribute.Relation<'manyToMany', 'api::product.product'>;
+    promotions: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::promotion.promotion'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false> &
       Schema.Attribute.SetPluginOptions<{
@@ -557,6 +565,100 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiDiscountCodeDiscountCode
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'discount_codes';
+  info: {
+    description: 'Gestion des codes promotionnels';
+    displayName: 'discountCode';
+    pluralName: 'discount-codes';
+    singularName: 'discount-code';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    active: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<true>;
+    categories: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::category.category'
+    >;
+    code: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 50;
+        minLength: 3;
+      }>;
+    combinableWithPromotions: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currentUses: Schema.Attribute.Integer &
+      Schema.Attribute.Private &
+      Schema.Attribute.DefaultTo<0>;
+    description: Schema.Attribute.Text;
+    discountType: Schema.Attribute.Enumeration<['percentage', 'fixed_amount']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'percentage'>;
+    discountValue: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    endDate: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::discount-code.discount-code'
+    > &
+      Schema.Attribute.Private;
+    maxDiscountAmount: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    maxUses: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    minOrderAmount: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    oneTimeUsePerCustomer: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    orders: Schema.Attribute.Relation<'oneToMany', 'api::order.order'>;
+    products: Schema.Attribute.Relation<'manyToMany', 'api::product.product'>;
+    publishedAt: Schema.Attribute.DateTime;
+    startDate: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    usedBy: Schema.Attribute.Relation<
+      'manyToMany',
+      'plugin::users-permissions.user'
+    > &
       Schema.Attribute.Private;
   };
 }
@@ -630,6 +732,7 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
   };
   attributes: {
     admin_notes: Schema.Attribute.Text;
+    appliedPromotions: Schema.Attribute.JSON;
     billing_address: Schema.Attribute.Component<'order.address', false> &
       Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
@@ -637,6 +740,10 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     customer_notes: Schema.Attribute.Text;
     delivery_date: Schema.Attribute.DateTime;
+    discountCode: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::discount-code.discount-code'
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::order.order'> &
       Schema.Attribute.Private;
@@ -644,6 +751,14 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::order-item.order-item'
     >;
+    originalAmount: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
     payment_date: Schema.Attribute.DateTime;
     payment_id: Schema.Attribute.String;
     payment_method: Schema.Attribute.String;
@@ -691,6 +806,15 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
         },
         number
       >;
+    totalDiscount: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -760,6 +884,10 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
         },
         number
       >;
+    discountCodes: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::discount-code.discount-code'
+    >;
     hair_type: Schema.Attribute.Enumeration<
       [
         'all',
@@ -834,6 +962,10 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       ]
     > &
       Schema.Attribute.Required;
+    promotions: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::promotion.promotion'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     review_count: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
@@ -885,6 +1017,87 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
         number
       > &
       Schema.Attribute.DefaultTo<0>;
+  };
+}
+
+export interface ApiPromotionPromotion extends Struct.CollectionTypeSchema {
+  collectionName: 'promotions';
+  info: {
+    description: 'Gestion des promotions et r\u00E9ductions';
+    displayName: 'Promotion';
+    pluralName: 'promotions';
+    singularName: 'promotion';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    active: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<true>;
+    categories: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::category.category'
+    >;
+    conditions: Schema.Attribute.JSON;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currentUsageCount: Schema.Attribute.Integer &
+      Schema.Attribute.Private &
+      Schema.Attribute.DefaultTo<0>;
+    description: Schema.Attribute.RichText;
+    discountType: Schema.Attribute.Enumeration<['percentage', 'fixed_amount']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'percentage'>;
+    discountValue: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      >;
+    endDate: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::promotion.promotion'
+    > &
+      Schema.Attribute.Private;
+    maximumDiscountAmount: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    minimumPurchaseAmount: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    priority: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    products: Schema.Attribute.Relation<'manyToMany', 'api::product.product'>;
+    publishedAt: Schema.Attribute.DateTime;
+    startDate: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    usageLimit: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
   };
 }
 
@@ -1596,9 +1809,11 @@ declare module '@strapi/strapi' {
       'api::cart-item.cart-item': ApiCartItemCartItem;
       'api::cart.cart': ApiCartCart;
       'api::category.category': ApiCategoryCategory;
+      'api::discount-code.discount-code': ApiDiscountCodeDiscountCode;
       'api::order-item.order-item': ApiOrderItemOrderItem;
       'api::order.order': ApiOrderOrder;
       'api::product.product': ApiProductProduct;
+      'api::promotion.promotion': ApiPromotionPromotion;
       'api::review.review': ApiReviewReview;
       'plugin::comments.comment': PluginCommentsComment;
       'plugin::comments.comment-report': PluginCommentsCommentReport;

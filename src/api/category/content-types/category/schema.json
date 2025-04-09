@@ -104,6 +104,18 @@
       "relation": "manyToMany",
       "target": "api::product.product",
       "mappedBy": "categories"
+    },
+    "promotions": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::promotion.promotion",
+      "mappedBy": "categories"
+    },
+    "discountCodes": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::discount-code.discount-code",
+      "mappedBy": "categories"
     }
   }
 }

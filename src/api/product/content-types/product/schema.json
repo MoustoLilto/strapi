@@ -166,27 +166,9 @@
       },
       "max": 5
     },
-    "categories": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::category.category",
-      "inversedBy": "products"
-    },
     "volume": {
       "type": "string",
       "required": true
-    },
-    "brand": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::brand.brand",
-      "inversedBy": "products"
-    },
-    "reviews": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::review.review",
-      "mappedBy": "product"
     },
     "average_rating": {
       "type": "decimal",
@@ -199,6 +181,36 @@
       "default": 0,
       "min": 0,
       "description": "Nombre total d'avis"
+    },
+    "promotions": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::promotion.promotion",
+      "mappedBy": "products"
+    },
+    "discountCodes": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::discount-code.discount-code",
+      "mappedBy": "products"
+    },
+    "brand": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::brand.brand",
+      "inversedBy": "products"
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "inversedBy": "products"
+    },
+    "reviews": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::review.review",
+      "mappedBy": "product"
     }
   }
 }

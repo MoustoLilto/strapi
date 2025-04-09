@@ -31,11 +31,6 @@
       "required": true,
       "default": "pending"
     },
-    "total_amount": {
-      "type": "decimal",
-      "required": true,
-      "min": 0
-    },
     "shipping_cost": {
       "type": "decimal",
       "required": true,
@@ -93,6 +88,34 @@
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "orders"
+    },
+    "discountCode": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::discount-code.discount-code",
+      "inversedBy": "orders"
+    },
+    "appliedPromotions": {
+      "type": "json",
+      "description": "Liste des promotions appliquées à la commande"
+    },
+    "totalDiscount": {
+      "type": "decimal",
+      "min": 0,
+      "default": 0,
+      "required": true,
+      "description": "Montant total des réductions appliquées"
+    },
+    "originalAmount": {
+      "type": "decimal",
+      "min": 0,
+      "required": true,
+      "description": "Montant total avant réductions"
+    },
+    "total_amount": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
     }
   }
 }
